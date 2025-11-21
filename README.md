@@ -39,11 +39,13 @@ npm run dev
 
 ### WebSocket Configuration
 
-The application currently uses mock data for demonstration. To connect to a real WebSocket:
+The application connects to a real-time WebSocket data source:
+- **URL**: `wss://web-t.pinkpunk.io/ws`
+- **Chain**: BSC (Binance Smart Chain, chainId: 56)
+- **Topic**: trending tokens
+- **Updates**: Real-time data pushed at 1-3 second intervals
 
-1. Update the WebSocket URL in `hooks/useTokenWebSocket.ts`
-2. Implement the actual WebSocket connection logic
-3. Ensure VPN is enabled if required for access
+**Note**: VPN may be required to access the WebSocket endpoint depending on your location.
 
 ## Available Scripts
 
@@ -93,9 +95,11 @@ web3/
 - **Age**: Token age information
 
 ### Real-time Updates
-- WebSocket connection with automatic reconnection
+- WebSocket connection with automatic reconnection (5s retry)
 - Live indicator showing connection status
-- Updates pushed every 1-3 seconds
+- Updates pushed every 1-3 seconds from real data source
+- Automatic heartbeat/pong messages to maintain connection
+- GZIP decompression for efficient data transfer
 - Smooth data transitions
 
 ### UI/UX

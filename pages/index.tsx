@@ -4,7 +4,7 @@ import { useTokenWebSocket } from '@/hooks/useTokenWebSocket';
 import styles from '@/styles/Home.module.css';
 
 export default function Home() {
-  const { tokens, isConnected, error } = useTokenWebSocket('');
+  const { tokens, isConnected, error } = useTokenWebSocket();
 
   return (
     <>
