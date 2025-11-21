@@ -1,0 +1,281 @@
+.container {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.connected {
+  background: #10b981;
+}
+
+.disconnected {
+  background: #ef4444;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 12px;
+  border: 1px solid #334155;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table thead {
+  background: rgba(30, 41, 59, 0.8);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #334155;
+}
+
+.thRank {
+  width: 60px;
+}
+
+.thToken {
+  min-width: 180px;
+}
+
+.thChain {
+  width: 80px;
+}
+
+.thPrice {
+  width: 120px;
+  text-align: right;
+}
+
+.thChange {
+  width: 100px;
+  text-align: right;
+}
+
+.thVolume {
+  width: 120px;
+  text-align: right;
+}
+
+.thMarketCap {
+  width: 120px;
+  text-align: right;
+}
+
+.thAge {
+  width: 100px;
+}
+
+.row {
+  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+  transition: background-color 0.2s ease;
+}
+
+.row:hover {
+  background: rgba(30, 41, 59, 0.4);
+}
+
+.table td {
+  padding: 1rem;
+  color: #e2e8f0;
+}
+
+.rank {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.token {
+  font-weight: 500;
+}
+
+.tokenInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tokenIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.tokenIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.iconPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.tokenDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.tokenSymbol {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.tokenName {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.chain {
+  color: #94a3b8;
+}
+
+.price {
+  text-align: right;
+  font-weight: 600;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+}
+
+.volume,
+.marketCap {
+  text-align: right;
+  color: #cbd5e1;
+  font-family: 'Courier New', monospace;
+}
+
+.positive {
+  color: #10b981;
+  text-align: right;
+  font-weight: 600;
+}
+
+.negative {
+  color: #ef4444;
+  text-align: right;
+  font-weight: 600;
+}
+
+.neutral {
+  color: #94a3b8;
+  text-align: right;
+  font-weight: 600;
+}
+
+.age {
+  color: #94a3b8;
+  font-size: 0.8125rem;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .table {
+    font-size: 0.8125rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .tableWrapper {
+    border-radius: 8px;
+  }
+
+  .table {
+    font-size: 0.75rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .tokenIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .tokenInfo {
+    gap: 0.5rem;
+  }
+}
