@@ -129,16 +129,16 @@
 
 .table td {
   padding: 1rem;
-  color: var(--color-primary-text);
 }
 
 .rank {
-  color: var(--color-secondary-text);
+  color: var(--color-secondary-text) !important;
   font-weight: 600;
 }
 
 .token {
   font-weight: 500;
+  color: var(--color-primary-text);
 }
 
 .tokenInfo {
@@ -190,37 +190,37 @@
 }
 
 .chain {
-  color: var(--color-secondary-text);
+  color: var(--color-secondary-text) !important;
 }
 
 .price {
   text-align: right;
   font-weight: 600;
-  color: var(--color-primary-text);
+  color: var(--color-primary-text) !important;
   font-family: 'Courier New', monospace;
 }
 
 .volume,
 .marketCap {
   text-align: right;
-  color: var(--color-primary-text);
+  color: var(--color-primary-text) !important;
   font-family: 'Courier New', monospace;
 }
 
 .positive {
-  color: var(--color-upside);
+  color: var(--color-upside) !important;
   text-align: right;
   font-weight: 600;
 }
 
 .negative {
-  color: var(--color-downside);
+  color: var(--color-downside) !important;
   text-align: right;
   font-weight: 600;
 }
 
 .neutral {
-  color: var(--color-secondary-text);
+  color: var(--color-secondary-text) !important;
   text-align: right;
   font-weight: 600;
 }

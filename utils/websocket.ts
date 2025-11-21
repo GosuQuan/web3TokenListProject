@@ -60,24 +60,60 @@ export class TrendingTokenWebSocket {
         };
 
         this.ws.onmessage = (event) => {
-          this.handleMessage(event.data);
+          try {
+            this.handleMessage(event.data);
+          } catch (error) {
+            console.error('Error handling WebSocket message:', error);
+            // 消息处理错误不应该断开连接，只记录错误
+            if (this.onErrorCallback) {
+              const err = error instanceof Error ? error : new Error('Message handling error');
+              this.onErrorCallback(err);
+            }
+          }
         };
 
         this.ws.onerror = (error) => {
           console.error('WebSocket error:', error);
           const err = new Error('WebSocket connection error');
-          this.onErrorCallback?.(err);
-          reject(err);
+          
+          // 安全调用错误回调
+          try {
+            this.onErrorCallback?.(err);
+          } catch (callbackError) {
+            console.error('Error in error callback:', callbackError);
+          }
+          
+          // 只在初始连接时 reject，避免重复 reject
+          if (this.ws?.readyState === WebSocket.CONNECTING) {
+            reject(err);
+          }
         };
 
         this.ws.onclose = () => {
           console.log('WebSocket disconnected');
           this.stopHeartbeat();
-          this.onDisconnectCallback?.();
+          
+          // 安全调用断开连接回调
+          try {
+            this.onDisconnectCallback?.();
+          } catch (callbackError) {
+            console.error('Error in disconnect callback:', callbackError);
+          }
+          
           this.attemptReconnect();
         };
       } catch (error) {
-        reject(error);
+        console.error('Error creating WebSocket:', error);
+        const err = error instanceof Error ? error : new Error('Failed to create WebSocket');
+        
+        // 安全调用错误回调
+        try {
+          this.onErrorCallback?.(err);
+        } catch (callbackError) {
+          console.error('Error in error callback:', callbackError);
+        }
+        
+        reject(err);
       }
     });
   }
@@ -86,22 +122,27 @@ export class TrendingTokenWebSocket {
    * 订阅trending数据
    */
   private subscribe(): void {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.warn('WebSocket is not open, cannot subscribe');
-      return;
+    try {
+      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+        console.warn('WebSocket is not open, cannot subscribe');
+        return;
+      }
+
+      const subscribeMessage = {
+        topic: 'trending',
+        event: 'sub',
+        interval: '',
+        pair: '',
+        chainId: '56',
+        compression: 0,
+      };
+
+      this.ws.send(JSON.stringify(subscribeMessage));
+      console.log('Subscription message sent');
+    } catch (error) {
+      console.error('Error subscribing to trending data:', error);
+      // 订阅失败不应该导致崩溃，记录错误即可
     }
-
-    const subscribeMessage = {
-      topic: 'trending',
-      event: 'sub',
-      interval: '',
-      pair: '',
-      chainId: '56',
-      compression: 0,
-    };
-
-    this.ws.send(JSON.stringify(subscribeMessage));
-    console.log('Subscription message sent');
   }
 
   /**
@@ -114,10 +155,13 @@ export class TrendingTokenWebSocket {
       
       try {
         message = JSON.parse(data);
+        console.log('Parsed JSON message, topic:', message.topic);
       } catch {
         // 如果JSON解析失败，尝试解压缩
+        console.log('JSON parse failed, attempting decompression...');
         const decompressed = decompressData(data);
         message = JSON.parse(decompressed);
+        console.log('Decompressed and parsed, topic:', message.topic);
       }
 
       // 处理ping消息，回复pong
@@ -128,7 +172,10 @@ export class TrendingTokenWebSocket {
 
       // 处理数据消息
       if (message.data && Array.isArray(message.data)) {
+        console.log(`Received ${message.data.length} tokens, first token:`, message.data[0]);
         this.onMessageCallback?.(message.data);
+      } else {
+        console.log('Message received but no data array:', message);
       }
     } catch (error) {
       console.error('Failed to handle message:', error);
@@ -140,49 +187,66 @@ export class TrendingTokenWebSocket {
    * 处理ping消息，发送pong响应
    */
   private handlePing(message: WebSocketMessage): void {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      return;
+    try {
+      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
+      const pongMessage = {
+        topic: 'pong',
+        event: 'sub',
+        pong: message.pong || String(Date.now()),
+        interval: '',
+        pair: '',
+        chainId: '',
+        compression: 1,
+      };
+
+      this.ws.send(JSON.stringify(pongMessage));
+      console.log('Pong message sent');
+    } catch (error) {
+      console.error('Error sending pong message:', error);
+      // Pong 发送失败不应该导致崩溃
     }
-
-    const pongMessage = {
-      topic: 'pong',
-      event: 'sub',
-      pong: message.pong || String(Date.now()),
-      interval: '',
-      pair: '',
-      chainId: '',
-      compression: 1,
-    };
-
-    this.ws.send(JSON.stringify(pongMessage));
-    console.log('Pong message sent');
   }
 
   /**
    * 启动心跳机制
    */
   private startHeartbeat(): void {
-    this.heartbeatInterval = setInterval(() => {
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        // 发送ping消息
-        const pingMessage = {
-          topic: 'ping',
-          event: 'sub',
-          interval: '',
-          pair: '',
-          chainId: '56',
-          compression: 0,
-        };
-        this.ws.send(JSON.stringify(pingMessage));
+    try {
+      this.heartbeatInterval = setInterval(() => {
+        try {
+          if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            // 发送ping消息
+            const pingMessage = {
+              topic: 'ping',
+              event: 'sub',
+              interval: '',
+              pair: '',
+              chainId: '56',
+              compression: 0,
+            };
+            this.ws.send(JSON.stringify(pingMessage));
 
-        // 设置超时，如果在规定时间内没有收到响应，认为连接已断开
-        this.heartbeatTimeout = setTimeout(() => {
-          console.warn('Heartbeat timeout, reconnecting...');
-          this.disconnect();
-          this.attemptReconnect();
-        }, 10000);
-      }
-    }, 30000); // 每30秒发送一次ping
+            // 设置超时，如果在规定时间内没有收到响应，认为连接已断开
+            this.heartbeatTimeout = setTimeout(() => {
+              try {
+                console.warn('Heartbeat timeout, reconnecting...');
+                this.disconnect();
+                this.attemptReconnect();
+              } catch (error) {
+                console.error('Error handling heartbeat timeout:', error);
+              }
+            }, 10000);
+          }
+        } catch (error) {
+          console.error('Error in heartbeat interval:', error);
+        }
+      }, 30000); // 每30秒发送一次ping
+    } catch (error) {
+      console.error('Error starting heartbeat:', error);
+    }
   }
 
   /**
@@ -203,19 +267,28 @@ export class TrendingTokenWebSocket {
    * 尝试重新连接
    */
   private attemptReconnect(): void {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      this.reconnectAttempts++;
-      const delay = this.reconnectDelay * this.reconnectAttempts;
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts}) in ${delay}ms`);
-      
-      setTimeout(() => {
-        this.connect().catch((error) => {
-          console.error('Reconnection failed:', error);
-        });
-      }, delay);
-    } else {
-      console.error('Max reconnection attempts reached');
-      this.onErrorCallback?.(new Error('Failed to reconnect after maximum attempts'));
+    try {
+      if (this.reconnectAttempts < this.maxReconnectAttempts) {
+        this.reconnectAttempts++;
+        const delay = this.reconnectDelay * this.reconnectAttempts;
+        console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts}) in ${delay}ms`);
+        
+        setTimeout(() => {
+          this.connect().catch((error) => {
+            console.error('Reconnection failed:', error);
+            // 重连失败会自动触发下一次重连尝试
+          });
+        }, delay);
+      } else {
+        console.error('Max reconnection attempts reached');
+        try {
+          this.onErrorCallback?.(new Error('Failed to reconnect after maximum attempts'));
+        } catch (callbackError) {
+          console.error('Error in error callback:', callbackError);
+        }
+      }
+    } catch (error) {
+      console.error('Error in attemptReconnect:', error);
     }
   }
 
@@ -223,10 +296,18 @@ export class TrendingTokenWebSocket {
    * 断开连接
    */
   disconnect(): void {
-    this.stopHeartbeat();
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
+    try {
+      this.stopHeartbeat();
+      if (this.ws) {
+        try {
+          this.ws.close();
+        } catch (error) {
+          console.error('Error closing WebSocket:', error);
+        }
+        this.ws = null;
+      }
+    } catch (error) {
+      console.error('Error in disconnect:', error);
     }
   }
 

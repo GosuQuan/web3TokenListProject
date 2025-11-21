@@ -7,6 +7,8 @@ interface TokenListProps {
 }
 
 export default function TokenList({ tokens, isConnected }: TokenListProps) {
+  // 调试：打印接收到的 tokens
+
   const formatNumber = (num: number, decimals: number = 2): string => {
     if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
     if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`;
@@ -31,6 +33,16 @@ export default function TokenList({ tokens, isConnected }: TokenListProps) {
     return styles.neutral;
   };
 
+  const getChangeStyle = (value: number): React.CSSProperties => {
+    const baseStyle: React.CSSProperties = {
+      textAlign: 'right',
+      fontWeight: 600,
+    };
+    
+    if (value > 0) return { ...baseStyle, color: 'rgba(70, 193, 127, 1)' };
+    if (value < 0) return { ...baseStyle, color: 'rgba(229, 56, 56, 1)' };
+    return { ...baseStyle, color: 'rgba(255, 255, 255, 0.4)' };
+  };
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -42,64 +54,70 @@ export default function TokenList({ tokens, isConnected }: TokenListProps) {
       </div>
 
       <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th className={styles.thRank}>Rank</th>
-              <th className={styles.thToken}>Token</th>
-              <th className={styles.thChain}>Chain</th>
-              <th className={styles.thPrice}>Price</th>
-              <th className={styles.thChange}>1h %</th>
-              <th className={styles.thChange}>24h %</th>
-              <th className={styles.thVolume}>24h Vol</th>
-              <th className={styles.thChange}>Vol %</th>
-              <th className={styles.thMarketCap}>Market Cap</th>
-              <th className={styles.thChange}>MC %</th>
-              <th className={styles.thAge}>Age</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tokens.map((token) => (
-              <tr key={token.rank} className={styles.row}>
-                <td className={styles.rank}>{token.rank}</td>
-                <td className={styles.token}>
-                  <div className={styles.tokenInfo}>
-                    <div className={styles.tokenIcon}>
-                      {token.icon ? (
-                        <img src={token.icon} alt={token.symbol} />
-                      ) : (
-                        <div className={styles.iconPlaceholder}>
-                          {token.symbol.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-                    <div className={styles.tokenDetails}>
-                      <div className={styles.tokenSymbol}>{token.symbol}</div>
-                      <div className={styles.tokenName}>{token.name}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className={styles.chain}>{token.chain}</td>
-                <td className={styles.price}>{formatPrice(token.price)}</td>
-                <td className={getChangeClass(token.priceChange1h)}>
-                  {formatPercentage(token.priceChange1h)}
-                </td>
-                <td className={getChangeClass(token.priceChange24h)}>
-                  {formatPercentage(token.priceChange24h)}
-                </td>
-                <td className={styles.volume}>{formatNumber(token.volume24h)}</td>
-                <td className={getChangeClass(token.volumeChange24h)}>
-                  {formatPercentage(token.volumeChange24h)}
-                </td>
-                <td className={styles.marketCap}>{formatNumber(token.marketCap)}</td>
-                <td className={getChangeClass(token.marketCapChange24h)}>
-                  {formatPercentage(token.marketCapChange24h)}
-                </td>
-                <td className={styles.age}>{token.age}</td>
+        {tokens.length === 0 ? (
+          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-secondary-text)' }}>
+            {isConnected ? 'Waiting for data...' : 'Connecting to WebSocket...'}
+          </div>
+        ) : (
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.thRank}>Rank</th>
+                <th className={styles.thToken}>Token</th>
+                <th className={styles.thChain}>Chain</th>
+                <th className={styles.thPrice}>Price</th>
+                <th className={styles.thChange}>1h %</th>
+                <th className={styles.thChange}>24h %</th>
+                <th className={styles.thVolume}>24h Vol</th>
+                <th className={styles.thChange}>Vol %</th>
+                <th className={styles.thMarketCap}>Market Cap</th>
+                <th className={styles.thChange}>MC %</th>
+                <th className={styles.thAge}>Age</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {tokens.map((token) => (
+                <tr key={token.rank} className={styles.row}>
+                  <td className={styles.rank}>{token.rank}</td>
+                  <td className={styles.token}>
+                    <div className={styles.tokenInfo}>
+                      <div className={styles.tokenIcon}>
+                        {token.icon ? (
+                          <img src={token.icon} alt={token.symbol} />
+                        ) : (
+                          <div className={styles.iconPlaceholder}>
+                            {token.symbol.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <div className={styles.tokenDetails}>
+                        <div className={styles.tokenSymbol}>{token.symbol}</div>
+                        <div className={styles.tokenName}>{token.name}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className={styles.chain}>{token.chain}</td>
+                  <td className={styles.price}>{formatPrice(token.price)}</td>
+                  <td className={getChangeClass(token.priceChange1h)} style={getChangeStyle(token.priceChange1h)}>
+                    {formatPercentage(token.priceChange1h)}
+                  </td>
+                  <td className={getChangeClass(token.priceChange24h)} style={getChangeStyle(token.priceChange24h)}>
+                    {formatPercentage(token.priceChange24h)}
+                  </td>
+                  <td className={styles.volume}>{formatNumber(token.volume24h)}</td>
+                  <td className={getChangeClass(token.volumeChange24h)} style={getChangeStyle(token.volumeChange24h)}>
+                    {formatPercentage(token.volumeChange24h)}
+                  </td>
+                  <td className={styles.marketCap}>{formatNumber(token.marketCap)}</td>
+                  <td className={getChangeClass(token.marketCapChange24h)} style={getChangeStyle(token.marketCapChange24h)}>
+                    {formatPercentage(token.marketCapChange24h)}
+                  </td>
+                  <td className={styles.age}>{token.age}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
