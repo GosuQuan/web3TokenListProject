@@ -15,7 +15,7 @@
 .title {
   font-size: 2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-primary-text);
   margin: 0;
 }
 
@@ -24,7 +24,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #94a3b8;
+  color: var(--color-secondary-text);
 }
 
 .indicator {
@@ -35,11 +35,11 @@
 }
 
 .connected {
-  background: #10b981;
+  background: var(--color-upside);
 }
 
 .disconnected {
-  background: #ef4444;
+  background: var(--color-downside);
 }
 
 @keyframes pulse {
@@ -53,9 +53,9 @@
 
 .tableWrapper {
   overflow-x: auto;
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--color-background);
   border-radius: 12px;
-  border: 1px solid #334155;
+  border: 1px solid var(--color-border);
 }
 
 .table {
@@ -65,7 +65,7 @@
 }
 
 .table thead {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--color-background);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -75,11 +75,11 @@
   padding: 1rem;
   text-align: left;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--color-secondary-text);
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .thRank {
@@ -119,21 +119,21 @@
 }
 
 .row {
-  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+  border-bottom: 1px solid var(--color-border);
   transition: background-color 0.2s ease;
 }
 
 .row:hover {
-  background: rgba(30, 41, 59, 0.4);
+  background: var(--color-row-hover);
 }
 
 .table td {
   padding: 1rem;
-  color: #e2e8f0;
+  color: var(--color-primary-text);
 }
 
 .rank {
-  color: #64748b;
+  color: var(--color-secondary-text);
   font-weight: 600;
 }
 
@@ -167,8 +167,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--color-primary-pink);
+  color: var(--color-background);
   font-weight: 700;
   font-size: 0.875rem;
 }
@@ -181,52 +181,52 @@
 
 .tokenSymbol {
   font-weight: 600;
-  color: #ffffff;
+  color: var(--color-primary-text);
 }
 
 .tokenName {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--color-secondary-text);
 }
 
 .chain {
-  color: #94a3b8;
+  color: var(--color-secondary-text);
 }
 
 .price {
   text-align: right;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--color-primary-text);
   font-family: 'Courier New', monospace;
 }
 
 .volume,
 .marketCap {
   text-align: right;
-  color: #cbd5e1;
+  color: var(--color-primary-text);
   font-family: 'Courier New', monospace;
 }
 
 .positive {
-  color: #10b981;
+  color: var(--color-upside);
   text-align: right;
   font-weight: 600;
 }
 
 .negative {
-  color: #ef4444;
+  color: var(--color-downside);
   text-align: right;
   font-weight: 600;
 }
 
 .neutral {
-  color: #94a3b8;
+  color: var(--color-secondary-text);
   text-align: right;
   font-weight: 600;
 }
 
 .age {
-  color: #94a3b8;
+  color: var(--color-secondary-text);
   font-size: 0.8125rem;
 }
 
